@@ -230,10 +230,25 @@ public class AesKey extends KeyczarKey {
     }
 
     @Override
-    public int initEncrypt(ByteBuffer output) throws KeyczarException {
-      // Generate a random value and encrypt it. This will be the IV.
+    public int initEncrypt(ByteBuffer output, String iv) throws KeyczarException {
       byte[] ivPreImage = new byte[BLOCK_SIZE];
-      Util.rand(ivPreImage);
+
+      if (iv == null) {
+        // Generate a random value and encrypt it. This will be the IV.
+        Util.rand(ivPreImage);
+      }
+      else {
+        // The byte array has to be of length 16 (BLOCK_SIZE)
+        String hash = iv;
+        if (iv.length() < 16) {
+          hash = String.format("%16s", iv).replace(' ', 'X');
+        }
+        else if (iv.length() > 16) {
+          hash = iv.substring(0, 15);
+        }
+        ivPreImage = hash.getBytes();
+      }
+
       try {
         return encryptingCipher.update(ByteBuffer.wrap(ivPreImage), output);
       } catch (javax.crypto.ShortBufferException e) {

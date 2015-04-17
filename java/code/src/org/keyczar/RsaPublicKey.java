@@ -268,7 +268,7 @@ public class RsaPublicKey extends KeyczarPublicKey {
     }
 
     @Override
-    public int initEncrypt(ByteBuffer output) throws KeyczarException {
+    public int initEncrypt(ByteBuffer output, String iv) throws KeyczarException {
       try {
         cipher.init(Cipher.ENCRYPT_MODE, jcePublicKey);
       } catch (InvalidKeyException e) {

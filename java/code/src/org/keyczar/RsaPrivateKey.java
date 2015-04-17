@@ -266,8 +266,8 @@ public class RsaPrivateKey extends KeyczarKey implements KeyczarPrivateKey {
     }
 
     @Override
-    public int initEncrypt(ByteBuffer output) throws KeyczarException {
-      return encryptingStream.initEncrypt(output);
+    public int initEncrypt(ByteBuffer output, String iv) throws KeyczarException {
+      return encryptingStream.initEncrypt(output, iv);
     }
 
     @Override

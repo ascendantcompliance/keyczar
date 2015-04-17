@@ -46,7 +46,7 @@ public interface EncryptingStream extends Stream {
    * @throws KeyczarException If there is any error initializing this Stream;
    *                          typically this would be a Java JCE exception.
    */
-  int initEncrypt(ByteBuffer output) throws KeyczarException;
+  int initEncrypt(ByteBuffer output, String iv) throws KeyczarException;
 
   /**
    * Update with more input to encrypt. Write any encrypted output to the given

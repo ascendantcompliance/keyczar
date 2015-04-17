@@ -103,13 +103,17 @@ public class Encrypter extends Keyczar {
    * @throws KeyczarException If there is a JCE exception or the key set does
    * not contain a primary encrypting key.
    */
-  public byte[] encrypt(byte[] input) throws KeyczarException {
+  public byte[] encrypt(byte[] input, String fixedIv) throws KeyczarException {
     ByteBuffer output = ByteBuffer.allocate(ciphertextSize(input.length));
-    encrypt(ByteBuffer.wrap(input), output);
+    encrypt(ByteBuffer.wrap(input), output, fixedIv);
     output.reset();
     byte[] outputBytes = new byte[output.remaining()];
     output.get(outputBytes);
     return outputBytes;
+  }
+
+  public byte[] encrypt(byte[] input) throws KeyczarException {
+    return encrypt(input, null);
   }
 
   /**
@@ -120,7 +124,7 @@ public class Encrypter extends Keyczar {
    * @throws KeyczarException If there is a JCE exception, the key set does
    * not contain a primary encrypting key, or the output buffer is too small.
    */
-  public void encrypt(ByteBuffer input, ByteBuffer output)
+  public void encrypt(ByteBuffer input, ByteBuffer output, String fixedIv)
       throws KeyczarException {
     KeyczarKey encryptingKey = getPrimaryKey();
     if (encryptingKey == null) {
@@ -138,7 +142,7 @@ public class Encrypter extends Keyczar {
     encryptingKey.copyHeader(output);
 
     // Write the IV. May be an empty array of zero length
-    cryptStream.initEncrypt(output);
+    cryptStream.initEncrypt(output, fixedIv);
 
     ByteBuffer inputCopy = input.asReadOnlyBuffer();
     while (inputCopy.remaining() > ENCRYPT_CHUNK_SIZE) {
@@ -165,6 +169,11 @@ public class Encrypter extends Keyczar {
     encryptingKey.addStreamToCacheForReuse(cryptStream);
   }
 
+  public void encrypt(ByteBuffer input, ByteBuffer output)
+      throws KeyczarException {
+    encrypt(input, output, null);
+  }
+
   /**
    * Encrypt a String and return a web-safe Base64 encoded ciphertext.
    *
@@ -173,12 +182,16 @@ public class Encrypter extends Keyczar {
    * @throws KeyczarException If there is a JCE exception or the key set does
    * not contain a primary encrypting key.
    */
-  public String encrypt(String input) throws KeyczarException {
+  public String encrypt(String input, String fixedIv) throws KeyczarException {
     try {
-      return Base64Coder.encodeWebSafe(encrypt(input.getBytes(DEFAULT_ENCODING)));
+      return Base64Coder.encodeWebSafe(encrypt(input.getBytes(DEFAULT_ENCODING), fixedIv));
     } catch (UnsupportedEncodingException e) {
       throw new KeyczarException(e);
     }
+  }
+
+  public String encrypt(String input) throws KeyczarException {
+    return encrypt(input, null);
   }
 
   @Override
