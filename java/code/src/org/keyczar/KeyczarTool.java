@@ -133,13 +133,13 @@ public class KeyczarTool {
             publicKeys(locationFlag, destinationFlag);
             break;
           case PROMOTE:
-            promote(locationFlag, Integer.parseInt(versionFlag));
+            promote(locationFlag, Integer.parseInt(versionFlag), crypterFlag);
             break;
           case DEMOTE:
-            demote(locationFlag, Integer.parseInt(versionFlag));
+            demote(locationFlag, Integer.parseInt(versionFlag), crypterFlag);
             break;
           case REVOKE:
-            revoke(locationFlag, Integer.parseInt(versionFlag));
+            revoke(locationFlag, Integer.parseInt(versionFlag), crypterFlag);
             break;
           case USEKEY:
             String message = null;
@@ -233,7 +233,7 @@ public class KeyczarTool {
     }
   }
 
-  private static void useKey(String msg, String locationFlag, String destinationFlag, 
+  private static void useKey(String msg, String locationFlag, String destinationFlag,
       String crypterFlag) throws KeyczarException, IOException {
     if (msg == null) {
       BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -397,15 +397,15 @@ public class KeyczarTool {
    * @throws KeyczarException if location or version flag is not set
    * or promotion is illegal.
    */
-  private static void promote(String locationFlag, int versionFlag)
+  private static void promote(String locationFlag, int versionFlag, String crypterFlag)
       throws KeyczarException {
     if (versionFlag < 0) {
       throw new KeyczarException(
           Messages.getString("KeyczarTool.MissingVersion"));
     }
-    GenericKeyczar genericKeyczar = createGenericKeyczar(locationFlag);
+    GenericKeyczar genericKeyczar = createGenericKeyczar(locationFlag, crypterFlag);
     genericKeyczar.promote(versionFlag);
-    updateGenericKeyczar(genericKeyczar, locationFlag);
+    updateGenericKeyczar(genericKeyczar, crypterFlag, locationFlag);
   }
 
   /**
@@ -417,15 +417,15 @@ public class KeyczarTool {
    * @throws KeyczarException if location or version flag is not set
    * or demotion is illegal.
    */
-  private static void demote(String locationFlag, int versionFlag)
+  private static void demote(String locationFlag, int versionFlag, String crypterFlag)
       throws KeyczarException {
     if (versionFlag < 0) {
       throw new KeyczarException(
           Messages.getString("KeyczarTool.MissingVersion"));
     }
-    GenericKeyczar genericKeyczar = createGenericKeyczar(locationFlag);
+    GenericKeyczar genericKeyczar = createGenericKeyczar(locationFlag, crypterFlag);
     genericKeyczar.demote(versionFlag);
-    updateGenericKeyczar(genericKeyczar, locationFlag);
+    updateGenericKeyczar(genericKeyczar, crypterFlag, locationFlag);
   }
 
   /**
@@ -456,12 +456,12 @@ public class KeyczarTool {
    * @throws KeyczarException if location or version flag is not set or if
    * unable to delete revoked key file.
    */
-  private static void revoke(String locationFlag, int versionFlag)
+  private static void revoke(String locationFlag, int versionFlag, String crypterFlag)
       throws KeyczarException {
-    GenericKeyczar genericKeyczar = createGenericKeyczar(locationFlag);
+    GenericKeyczar genericKeyczar = createGenericKeyczar(locationFlag, crypterFlag);
     genericKeyczar.revoke(versionFlag);
     // update meta files, key files
-    updateGenericKeyczar(genericKeyczar, locationFlag);
+    updateGenericKeyczar(genericKeyczar, crypterFlag, locationFlag);
     if (mock == null) { // not necessary for testing
       File revokedVersion = new File(locationFlag + versionFlag);
       if (!revokedVersion.delete()) { // delete old key file
