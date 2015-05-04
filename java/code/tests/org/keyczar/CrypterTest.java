@@ -90,6 +90,33 @@ public class CrypterTest extends TestCase {
   }
 
   @Test
+  public final void testAesEncryptAndDecryptFixedIV1() throws KeyczarException {
+    String iv = "554771c2fab667a4";
+    Crypter crypter = new Crypter(TEST_DATA + "/aes");
+    String ciphertext = crypter.encrypt(input, iv);
+    String decrypted = crypter.decrypt(ciphertext);
+    assertEquals(input, decrypted);
+  }
+
+  @Test
+  public final void testAesEncryptAndDecryptFixedIV2() throws KeyczarException {
+    String iv = "554771c2fab667a4a82e035d";
+    Crypter crypter = new Crypter(TEST_DATA + "/aes");
+    String ciphertext = crypter.encrypt(input, iv);
+    String decrypted = crypter.decrypt(ciphertext);
+    assertEquals(input, decrypted);
+  }
+
+  @Test
+  public final void testAesEncryptAndDecryptFixedIV3() throws KeyczarException {
+    String iv = "554771c";
+    Crypter crypter = new Crypter(TEST_DATA + "/aes");
+    String ciphertext = crypter.encrypt(input, iv);
+    String decrypted = crypter.decrypt(ciphertext);
+    assertEquals(input, decrypted);
+  }
+
+  @Test
   public final void testRsaEncryptAndDecryptWithCrypter() throws KeyczarException {
     Crypter crypter = new Crypter(TEST_DATA + "/rsa");
     String ciphertext = crypter.encrypt(input);

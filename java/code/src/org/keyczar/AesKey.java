@@ -32,6 +32,7 @@ import org.keyczar.keyparams.AesKeyParameters;
 import org.keyczar.util.Base64Coder;
 import org.keyczar.util.Util;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 
@@ -244,9 +245,15 @@ public class AesKey extends KeyczarKey {
           hash = String.format("%16s", iv).replace(' ', 'X');
         }
         else if (iv.length() > 16) {
-          hash = iv.substring(0, 15);
+          hash = iv.substring(0, 16);
         }
-        ivPreImage = hash.getBytes();
+
+        try {
+          ivPreImage = hash.getBytes(Keyczar.DEFAULT_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+          throw new KeyczarException(e);
+        }
+
       }
 
       try {
